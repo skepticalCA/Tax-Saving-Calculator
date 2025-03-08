@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Income Tax Calculator FY 2025-26</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #27ae60;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: var(--primary);
+            margin-top: 0;
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 10px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--dark);
+            font-weight: 500;
+            text-align: left;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border 0.3s, box-shadow 0.3s;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            outline: none;
+        }
+        .icon-input {
+            position: relative;
+        }
+        .icon-input i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+        }
+        .icon-input input {
+            padding-left: 40px;
+        }
+        button {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            width: 100%;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #219653;
+        }
+        .result {
+            margin-top: 25px;
+            background-color: var(--light);
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .breakdown {
+            margin-top: 15px;
+            text-align: left;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+        }
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px dashed #ddd;
+        }
+        .breakdown-item:last-child {
+            border-bottom: none;
+        }
+        .charts-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .chart-container {
+            width: 48%;
+            background-color: white;
+            padding: 10px;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .tax-saving-tips {
+            margin-top: 20px;
+            text-align: left;
+            background-color: #e8f4fd;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid var(--secondary);
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #e74c3c;
+            color: white;
+            font-weight: bold;
+            padding: 10px 18px;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .cta-button:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+        .save-money {
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        .toggle-container {
+            display: flex;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+        }
+        .toggle-btn {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background-color: #f5f5f5;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .toggle-btn.active {
+            background-color: var(--secondary);
+            color: white;
+            font-weight: 600;
+        }
+        .badge {
+            display: inline-block;
+            background-color: #e74c3c;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 6px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2><i class="fas fa-calculator"></i> Income Tax Calculator FY 2025-26</h2>
+        
+        <div class="toggle-container">
+            <div class="toggle-btn active" onclick="setActiveTab(this, 'basic-info')">Basic Info</div>
+            <div class="toggle-btn" onclick="setActiveTab(this, 'advanced-options')">Advanced Options</div>
+        </div>
+        
+        <div id="basic-info" class="tab-content">
+            <div class="input-group">
+                <label for="grossIncome">Gross Total Income (in ₹):</label>
+                <div class="icon-input">
+                    <i class="fas fa-rupee-sign"></i>
+                    <input type="number" id="grossIncome" placeholder="e.g. 1000000">
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label for="deductions">Total Deductions (in ₹):</label>
+                <div class="icon-input">
+                    <i class="fas fa-minus-circle"></i>
+                    <input type="number" id="deductions" placeholder="e.g. 150000">
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label for="ageGroup">Age Group:</label>
+                <select id="ageGroup">
+                    <option>Below 60</option>
+                    <option>60-80</option>
+                    <option>Above 80</option>
+                </select>
+            </div>
+        </div>
+        
+        <div id="advanced-options" class="tab-content" style="display:none;">
+            <div class="input-group">
+                <label for="resStatus">Residential Status:</label>
+                <select id="resStatus">
+                    <option value="resident">Resident</option>
+                    <option value="nri">Non-Resident Indian</option>
+                </select>
+            </div>
+        </div>
+        
+        <button onclick="calculateTax()"><i class="fas fa-calculator"></i> Calculate Tax</button>
+        
+        <div class="result" id="result"></div>
+        <div id="chartContainer" style="display:none;">
+            <canvas id="taxChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // Set active tab
+        function setActiveTab(element, tabId) {
+            document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            
+            document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
+            document.getElementById(tabId).style.display = 'block';
+        }
+        
+        // Main calculation function
+        function calculateTax() {
+            let gross = parseFloat(document.getElementById('grossIncome').value);
+            let deductions = parseFloat(document.getElementById('deductions').value);
+            let ageGroup = document.getElementById('ageGroup').value;
+
+            if (isNaN(gross) || isNaN(deductions) || gross < 0 || deductions < 0) {
+                document.getElementById('result').innerHTML = "<span style='color: red;'><i class='fas fa-exclamation-circle'></i> Please enter valid positive numbers.</span>";
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('chartContainer').style.display = 'none';
+                return;
+            }
+
+            // Calculate base tax
+            let newTaxObj = calculateNewRegimeTax(gross);
+            let oldTaxObj = calculateOldRegimeTax(gross, deductions, ageGroup);
+            
+            // Determine better regime
+            let newTotalTax = newTaxObj.totalTax;
+            let oldTotalTax = oldTaxObj.totalTax;
+            let suggestion = newTotalTax < oldTotalTax ? "New Regime" : (oldTotalTax < newTotalTax ? "Old Regime" : "Both are the same");
+            
+            // Calculate potential tax savings
+            let potentialSavings = Math.abs(newTotalTax - oldTotalTax);
+            
+            // Display result with animation
+            document.getElementById('result').style.display = 'none';
+            setTimeout(() => {
+                document.getElementById('result').innerHTML = `
+                    <h3 style="color: var(--primary);"><i class="fas fa-file-invoice-dollar"></i> Tax Calculation Result</h3>
+                    
+                    <div class="breakdown">
+                        <h4>New Regime</h4>
+                        <div class="breakdown-item">
+                            <span>Base Tax:</span>
+                            <span>₹ ${newTaxObj.baseTax.toFixed(2)}</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Surcharge:</span>
+                            <span>₹ ${newTaxObj.surcharge.toFixed(2)}</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Health & Education Cess:</span>
+                            <span>₹ ${newTaxObj.cess.toFixed(2)}</span>
+                        </div>
+                        <div class="breakdown-item" style="font-weight: bold;">
+                            <span>Total Tax:</span>
+                            <span>₹ ${newTaxObj.totalTax.toFixed(2)}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="breakdown">
+                        <h4>Old Regime</h4>
+                        <div class="breakdown-item">
+                            <span>Base Tax:</span>
+                            <span>₹ ${oldTaxObj.baseTax.toFixed(2)}</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Surcharge:</span>
+                            <span>₹ ${oldTaxObj.surcharge.toFixed(2)}</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Health & Education Cess:</span>
+                            <span>₹ ${oldTaxObj.cess.toFixed(2)}</span>
+                        </div>
+                        <div class="breakdown-item" style="font-weight: bold;">
+                            <span>Total Tax:</span>
+                            <span>₹ ${oldTaxObj.totalTax.toFixed(2)}</span>
+                        </div>
+                    </div>
+                    
+                    <p style="color: var(--accent); font-weight: bold; margin-top: 15px; font-size: 18px;">
+                        <i class="fas fa-lightbulb"></i> Suggestion: ${suggestion} is better for you.
+                        ${potentialSavings > 0 ? `<span class="save-money">(Save ₹${potentialSavings.toFixed(2)}!)</span>` : ''}
+                    </p>
+                    
+                    <div class="tax-saving-tips">
+                        <h4><i class="fas fa-piggy-bank"></i> Tax Saving Tips <span class="badge">New</span></h4>
+                        <p><strong>Did you know?</strong> You could be paying too much tax! Our expert tax consultants have helped clients save an average of ₹35,000 per year through proper tax planning.</p>
+                        <p>💰 Maximize deductions you might be missing</p>
+                        <p>📝 Get your tax filing done right the first time</p>
+                        <a href="https://tinyurl.com/itrfilling" class="cta-button" target="_blank">
+                            <i class="fas fa-lock"></i> TAX CONSULTATION - CLAIM NOW!
+                        </a>
+                    </div>
+                `;
+                document.getElementById('result').style.display = 'block';
+                
+                // Create chart
+                createTaxComparisonChart(newTotalTax, oldTotalTax);
+            }, 300);
+        }
+        
+        // Calculate tax under new regime including surcharge and cess
+        function calculateNewRegimeTax(grossIncome) {
+            let taxableIncome = Math.max(0, grossIncome - 75000);
+            let slabs = [
+                { upTo: 400000, rate: 0 },
+                { upTo: 800000, rate: 0.05 },
+                { upTo: 1200000, rate: 0.10 },
+                { upTo: 1600000, rate: 0.15 },
+                { upTo: 2000000, rate: 0.20 },
+                { upTo: 2400000, rate: 0.25 },
+                { upTo: Infinity, rate: 0.30 }
+            ];
+            
+            let baseTax = calculateTaxFromSlabs(taxableIncome, slabs);
+            
+            // Rebate for income up to 7 lakhs
+            if (baseTax <= 60000) baseTax = 0;
+            
+            // Calculate surcharge
+            let surcharge = calculateSurcharge(baseTax, grossIncome, "new");
+            
+            // Calculate cess (4% on base tax + surcharge)
+            let cess = (baseTax + surcharge) * 0.04;
+            
+            return {
+                baseTax: baseTax,
+                surcharge: surcharge,
+                cess: cess,
+                totalTax: baseTax + surcharge + cess
+            };
+        }
+        
+        // Calculate tax under old regime including surcharge and cess
+        function calculateOldRegimeTax(grossIncome, deductions, ageGroup) {
+            let taxableIncome = Math.max(0, grossIncome - (deductions + 50000));
+            let slabs = ageGroup === 'Below 60' ?
+                [{ upTo: 250000, rate: 0 }, { upTo: 500000, rate: 0.05 }, { upTo: 1000000, rate: 0.20 }, { upTo: Infinity, rate: 0.30 }] :
+                ageGroup === '60-80' ?
+                [{ upTo: 300000, rate: 0 }, { upTo: 500000, rate: 0.05 }, { upTo: 1000000, rate: 0.20 }, { upTo: Infinity, rate: 0.30 }] :
+                [{ upTo: 500000, rate: 0 }, { upTo: 1000000, rate: 0.20 }, { upTo: Infinity, rate: 0.30 }];
+            
+            // Calculate base tax with rebate for income up to 5 lakhs
+            let baseTax = taxableIncome <= 500000 ? 0 : calculateTaxFromSlabs(taxableIncome, slabs);
+            
+            // Calculate surcharge
+            let surcharge = calculateSurcharge(baseTax, grossIncome, "old");
+            
+            // Calculate cess (4% on base tax + surcharge)
+            let cess = (baseTax + surcharge) * 0.04;
+            
+            return {
+                baseTax: baseTax,
+                surcharge: surcharge,
+                cess: cess,
+                totalTax: baseTax + surcharge + cess
+            };
+        }
+        
+        // Calculate surcharge based on income level
+        function calculateSurcharge(tax, income, regime) {
+            if (regime === "new") {
+                if (income > 50000000) return tax * 0.37; // 37% surcharge for income > 5 crore
+                if (income > 20000000) return tax * 0.25; // 25% surcharge for income > 2 crore
+                if (income > 10000000) return tax * 0.15; // 15% surcharge for income > 1 crore
+                if (income > 5000000) return tax * 0.10; // 10% surcharge for income > 50 lakhs
+                return 0;
+            } else { // Old regime
+                if (income > 50000000) return tax * 0.37; // 37% surcharge for income > 5 crore
+                if (income > 20000000) return tax * 0.25; // 25% surcharge for income > 2 crore
+                if (income > 10000000) return tax * 0.15; // 15% surcharge for income > 1 crore
+                if (income > 5000000) return tax * 0.10; // 10% surcharge for income > 50 lakhs
+                return 0;
+            }
+            
+            // Note: For simplicity, marginal relief calculations are not included
+            // A complete implementation would include checking for marginal relief cases
+        }
+        
+        // Calculate tax from slabs - unchanged from original
+        function calculateTaxFromSlabs(taxableIncome, slabs) {
+            let tax = 0, previousUpTo = 0;
+            for (let slab of slabs) {
+                if (taxableIncome > previousUpTo) {
+                    let taxableAtThisSlab = Math.min(taxableIncome, slab.upTo) - previousUpTo;
+                    tax += taxableAtThisSlab * slab.rate;
+                    previousUpTo = slab.upTo;
+                }
+            }
+            return tax;
+        }
+        
+        // Create chart for visualization
+        function createTaxComparisonChart(newTax, oldTax) {
+            const ctx = document.getElementById('taxChart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (window.taxChart) window.taxChart.destroy();
+            
+            window.taxChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['New Regime', 'Old Regime'],
+                    datasets: [{
+                        label: 'Tax Amount (₹)',
+                        data: [newTax, oldTax],
+                        backgroundColor: [
+                            'rgba(52, 152, 219, 0.7)',
+                            'rgba(46, 204, 113, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(52, 152, 219, 1)',
+                            'rgba(46, 204, 113, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Tax Comparison Between Regimes'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '₹' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            document.getElementById('chartContainer').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
